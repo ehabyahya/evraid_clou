@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # 1. TimescaleDB (PostgreSQL 16 + TimescaleDB extension)
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: evraid_timescaledb
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-evraid_cloud}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d evraid_cloud"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis Cluster / Single Node (Hot State Cache)
+  redis:
+    image: redis:7-alpine
+    container_name: evraid_redis
+    restart: always
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. EVRaid Cloud Ingestion API Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: evraid_backend
+    restart: always
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - PROJECT_NAME=EVRaid Cloud Ingestion API
+      - ENVIRONMENT=production
+      - API_V1_STR=/v1
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@timescaledb:5432/${POSTGRES_DB:-evraid_cloud}
+      - REDIS_URL=redis://redis:6379/0
+    ports:
+      - "8000:8000"
+
+  # 4. EVRaid Cloud Web Dashboard (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: evraid_frontend
+    restart: always
+    depends_on:
+      - backend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000/v1
+    ports:
+      - "3000:3000"
+
+volumes:
+  timescaledb_data:
+  redis_data:
+

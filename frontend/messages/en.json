@@ -1,0 +1,47 @@
+{
+  "brand": {
+    "name": "evRAID",
+    "subtitle": "FLEET PLATFORM"
+  },
+  "nav": {
+    "overview": "Overview",
+    "map": "Fleet map",
+    "packs": "Battery packs",
+    "alerts": "Alerts & work orders",
+    "ai_insights": "AI insights",
+    "devices": "Devices & OTA",
+    "reports": "Reports",
+    "admin": "Admin console"
+  },
+  "workspace": {
+    "title": "WORKSPACE",
+    "operator": "Demo Operator",
+    "fleet": "Cairo fleet",
+    "plan": "Pro plan"
+  },
+  "overview": {
+    "title": "Fleet overview",
+    "subtitle": "live data, updated recently",
+    "packs_online": "PACKS ONLINE",
+    "avg_soh": "AVERAGE SOH",
+    "open_alerts": "OPEN ALERTS",
+    "need_charging": "NEED CHARGING",
+    "avg_efc": "AVG. EQUIVALENT CYCLES",
+    "health_distribution": "Health grade distribution",
+    "health_distribution_sub": "Grade from SOH and fault history",
+    "soh_trend": "Average SOH, last 12 months",
+    "open_critical": "Open critical alerts",
+    "packs_attention": "Packs needing attention",
+    "all_alerts": "All alerts",
+    "all_packs": "All packs"
+  },
+  "actions": {
+    "search": "Pack serial or IMEI",
+    "export_report": "Export report",
+    "register_pack": "Register pack",
+    "acknowledge": "Acknowledge",
+    "run_diagnostic": "Run diagnostic",
+    "create_work_order": "Create work order"
+  }
+}
+
